@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="C:/Users/edmond.o.flynn/Downloads/httpclient-4.5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/edmond.o.flynn/Downloads/httpcore-4.4.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/edmond.o.flynn/Downloads/httpmime-4.5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/edmond.o.flynn/Downloads/bridj-0.6.3-20130316.190111-13.jar"/>
+	<classpathentry kind="lib" path="C:/Users/edmond.o.flynn/Downloads/dx-1.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/edmond.o.flynn/Downloads/slf4j-api-1.7.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/edmond.o.flynn/Downloads/webcam-capture-0.3.10.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
