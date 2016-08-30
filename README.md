@@ -37,17 +37,18 @@ Checks current training of the group once training has been called
 ```  
 $ python ./facialrecognition.py get <url>
 ```
-Checks an image against the face group and returns the name if it matches within a tolerance
+Checks an image against the face group and returns the name and confidence if it matches within a tolerance
   
 ```
 $ python ./facialrecognition nuke
 ```
-Purges the group and does everything in the correct order for you. Use this if you don't want to do things manually. For regular use, you'll most likely just use <nuke> and <get>. For example: 
+Purges the group and does everything in the correct order for you. Use this if you don't want to do things manually. For regular use, you'll most likely just use *nuke* and *get*. For example: 
 ```
 $ python nuke
-$ python get http://www.example.com/edmond.o.flynn.jpg
-$ python get http://www.example.com/john.smith.jpg
+$ python get http://www.glassbyte.com/images/edmond.o.flynn.jpg
 ```
+
+Please note that URLs must be in the form of ``http://www.example.com/edmond.o.flynn.jpg`` remotely, and the name must correspond to its remote counterpart locally. 
 
 ##Alexa Skill
 The Alexa skill associated with this allows the user to interact with the the service by invoking it by voice. 
@@ -58,3 +59,39 @@ The Alexa skill associated with this allows the user to interact with the the se
 ```
 
 The Alexa skill relies on the stream of images being sent to the server to be checked. The scripts are invoked with the latest images URL as a parameter for the image comparison against a group.
+
+##How to Run
+###Training Your Own Facelist
+Get your own Microsoft API key and replace the KEY variable in the facialrecognition.py file with it.  
+In the same folder as the python file, create a folder called images. Put all of your training images in here. They will be used for their filenames.  
+On a publicly available webhost, upload the same images to there and replace the ``http://www.glassbyte.com/images/`` URL with your own. The images must be uploaded to a webserver so that the Microsoft API can discover them.  
+Run ``python ./facialrecognition nuke`` and then when this finishes, check its training with ``python ./facialrecognition check``. Your facelist should now be trained.  
+
+###Tomcat Server Webapp
+Run with Eclipse Jee Neon and Java EE. The dependencies should already be included as .jar files. If not, the following .jar files are needed:  
+* Jersey 2.23.1 Container Servlet
+* Jersey 2.23.1 Common
+* Jersey 2.23.1 Server
+* Jersey 2.23.1 Client
+* Jersey 2.23.1 Media Multipart
+* Mimepull 1.9.6
+* Jython Standalone 2.5.2
+
+Open the project, right click on the project, export > WAR file.  
+Use this file to upload to a Tomcat installation on an AWS EC2 instance. Make sure that the appropriate ports are open.  
+
+###Interacting with the Tomcat Service
+The service takes GET and POST requests with parameters to various URLs. 
+
+*GET* ``.../WebServer/rest/image/name/{name}`` Returns in JSON format the result of the {name} parameter passed, corresponding to http://www.glassbyte.com/images/{name}.jpg. Used for debug for finding out the name and confidence of known static images  
+*GET* ``.../WebServer/rest/image/name/`` Returns in JSON format the result of the latest image uploaded to the Tomcat service when processed with the Python script, returning the name and the confidence level.  
+*GET* ``.../WebServer/rest/image/latestImage`` Returns a jpeg format mime type of the latest image uploaded for viewing.  
+*POST* ``.../WebServer/rest/image/upload`` Receives an image that has been posted to the address, and saves the item as the current time in milliseconds which is then used for grooming images later, ie removing images that are more than 30s old.  
+
+###Webcam Setup
+Open with Intellij IDEA as it was written using this IDE. Change the destination of where the images will be sent by modifying the *POST_ADDRESS* global variable to whatever you want. The only dependencies for this app is 
+[this](https://github.com/sarxos/webcam-capture "Pls download me"), which simplifies taking pictures from a webcam on a laptop. To run, click run. :smile:
+
+###Deploying on Amazon Web Service
+To deploy the Tomcat webapp, Google installing Tomcat 8 on a Ubuntu installation, forward and redirect any ports necessary on the instance, SSH into the instance via a terminal and SCP the war file over to the root directory.  
+Move the file to wherever the webapps folder of the Tomcat 8 installation is on the server, then cd to bin of the Tomcat installation. Restart Tomcat and install the new webapp by ``$ sudo ./catalina run``. Hey presto :dancer:
