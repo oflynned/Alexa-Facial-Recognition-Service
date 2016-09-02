@@ -19,20 +19,20 @@ public class HelloWorld implements CallbackEvent {
 	final String POST_URL = "/WebServer/image/upload";
 	final String GET_URL = "/WebServer/image/name";
 	final String IMAGE_URL = HOST_URL + "/WebServer/rest/image/image/";
-	
-	final String IMAGE_DIRECTORY = "/home/ubuntu/images/";
+
+	final String IMAGE_DIRECTORY = "/ubuntu/home/images/";
 	final String PUBLIC_DIRECTORY = HOST_URL + "/WebServer/rest/image/latestImage";
-	
+
 	private String currentName;
-	
+
 	private static final int OK = 200;
 	private static final int REDIRECT = 301;
 	private static final int ERROR = 400;
-	
+
 	int responseCode;
-	
+
 	Notifier notifier;
-	
+
 	@GET
 	@Path("/name/{url}")
 	@Consumes(MediaType.TEXT_PLAIN)
@@ -42,7 +42,7 @@ public class HelloWorld implements CallbackEvent {
 		notifier.doWork();
 		return Response.status(OK).entity(notifier.getResult()).build();
 	}
-	
+
 	@GET
 	@Path("/name")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -51,20 +51,20 @@ public class HelloWorld implements CallbackEvent {
 		File[] files = directory.listFiles();
 		File latestFile = files[files.length - 1];
 		System.out.println(latestFile.getName());
-		System.out.println(IMAGE_URL + latestFile.getName());
-		
-		notifier = new Notifier(this, IMAGE_URL + latestFile.getName());
+		System.out.println(latestFile.getAbsolutePath());
+
+		notifier = new Notifier(this, latestFile.getAbsolutePath());
 		notifier.doWork();
 		return Response.status(OK).entity(notifier.getResult()).build();
 	}
-	
+
 	@GET
 	@Path("/image/{filename}")
 	@Produces("image/jpeg")
 	public Response getRequestedImage(@PathParam("filename") String filename) throws FileNotFoundException {
 		return Response.ok().entity(new FileInputStream(IMAGE_DIRECTORY + filename)).build();
 	}
-	
+
 	//image retrieval via URI
 	@GET
 	@Path("/latestImage")
@@ -73,16 +73,16 @@ public class HelloWorld implements CallbackEvent {
 		File directory = new File(IMAGE_DIRECTORY);
 		File[] files = directory.listFiles();
 		System.out.println(files);
-		
+
 		File latestFile = files[files.length - 1];
 		System.out.println(latestFile.getName());
-		
+
 		String fileName = IMAGE_DIRECTORY + latestFile.getName();
 		System.out.println(fileName);
 
 		return Response.ok().entity(new FileInputStream(latestFile)).build();
 	}
-	
+
 	@POST
 	@Path("/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -91,10 +91,10 @@ public class HelloWorld implements CallbackEvent {
 		String uploadLocation = IMAGE_DIRECTORY + System.currentTimeMillis() + ".jpg";
 		saveToFile(inputStream, uploadLocation);
 		ImageManager.manageImages();
-		
-		return Response.status(responseCode).entity(getResponseText(responseCode, uploadLocation)).build(); 
+
+		return Response.status(responseCode).entity(getResponseText(responseCode, uploadLocation)).build();
 	}
-	
+
 	private String getResponseText(int responseCode, String uploadLocation) {
 		switch(responseCode) {
 			case OK:
@@ -107,7 +107,7 @@ public class HelloWorld implements CallbackEvent {
 				return "Other";
 		}
 	}
-	
+
 	private void saveToFile(InputStream inputStream, String location) {
 		OutputStream out = null;
 		try {
@@ -118,7 +118,7 @@ public class HelloWorld implements CallbackEvent {
 				out.write(bytes, 0, read);
 			}
 			responseCode = OK;
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			responseCode = ERROR;

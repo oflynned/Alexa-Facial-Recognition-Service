@@ -1,3 +1,5 @@
+package com.accenture.techlabs;
+
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamResolution;
 import org.apache.http.HttpEntity;
@@ -16,9 +18,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by edmond.o.flynn on 20/06/2016.
- */
 public class Main {
     private static final String LOCAL_POST_ADDRESS = "http://localhost:8080/WebServer/rest/image/upload";
     private static final String POST_ADDRESS = "http://ec2-54-210-185-131.compute-1.amazonaws.com/WebServer/rest/image/upload";
@@ -90,7 +89,7 @@ public class Main {
      */
     private static void postImage(File file) {
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost uploadFile = new HttpPost(POST_ADDRESS);
+        HttpPost uploadFile = new HttpPost(LOCAL_POST_ADDRESS);
 
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.addTextBody("field1", "yes", ContentType.TEXT_PLAIN);

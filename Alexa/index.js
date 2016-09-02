@@ -26,20 +26,20 @@ app.intent('retrieveFaceIntent', {
 
     client.get(url, function (data, callback) {
         console.log(data);
-		
+
         var name = data.name;
         var confidence = data.confidence;
         var speechOutput;
 
-        if(name != null) {
+        if(name !== null) {
             speechOutput = "I'm about " + confidence + " percent sure that your name is " + name + ". Welcome to Accenture.";
         } else {
-            speechOutput = "I didn't recognise you unfortunately."
+            speechOutput = "I didn't recognise you unfortunately.";
         }
 
         console.log(speechOutput);
         response.say(speechOutput).shouldEndSession(true);
-        response.send();  
+        response.send();
 
 
     }).on('error', function (err) {
@@ -51,5 +51,3 @@ app.intent('retrieveFaceIntent', {
 });
 
 module.exports = app;
-
-

@@ -10,7 +10,7 @@ import time
 import urllib
 import math
 
-KEY_1 = "762ac81f753e4514ad8517a6034d7677"
+KEY_1 = "667f399a4e4046c0b37ddef39b4bf2fa"
 HOST_URL = "api.projectoxford.ai"
 
 DIRECTORY = os.path.dirname(os.path.realpath(__file__)) + "/images/"
@@ -21,6 +21,10 @@ face_id_name_list = list()
 users = {}
 
 header = {
+    'Ocp-Apim-Subscription-Key': KEY_1
+}
+header_octet = {
+    'Content-Type': 'application/octet-stream',
     'Ocp-Apim-Subscription-Key': KEY_1
 }
 
@@ -70,6 +74,24 @@ def detect_face(url):
     except Exception, e:
         print e
 
+def detect_face_image(image):
+    body = image
+    params = urllib.urlencode({
+        'returnFaceId': 'true',
+        'returnFaceLandmarks': 'true',
+    })
+
+    try:
+        conn = httplib.HTTPSConnection(HOST_URL)
+        conn.request("POST", "/face/v1.0/detect?%s" % params, body, header_octet)
+        response = conn.getresponse()
+        data = json.loads(response.read())
+        face_id = (data[0]["faceId"])
+        conn.close()
+        return face_id
+
+    except Exception, e:
+        print e
 
 def employee_name_source(directory, index):
     file_list = list()
@@ -120,13 +142,8 @@ def add_face_to_group(name, group):
                 break
 
 
-def add_face_to_person(person_id, url):
-    body = {'url': url}
-    json_body = json.dumps(body)
+def add_face_to_person(person_id, image):
     response_message = "error"
-
-    sys.stdout.write(str(url))
-    sys.stdout.write(str(json_body))
     sys.stdout.flush()
 
     # print person_id
@@ -136,7 +153,7 @@ def add_face_to_person(person_id, url):
             conn = httplib.HTTPSConnection(HOST_URL)
             conn.request("POST",
                          "/face/v1.0/persongroups/" + PERSON_GROUP_ID + "/persons/" + person_id + "/persistedFaces",
-                         json_body, header)
+                         image, header_octet)
             response = conn.getresponse()
             data = response.read()
             response_message = json.loads(data)
@@ -270,10 +287,10 @@ def train_group():
     users = dict(zip(face_id_list, face_id_name_list))
 
     for index, user in enumerate(users):
-        person_uri = "http://www.glassbyte.com/images/" + employee_file_name(users[user]) + ".jpg"
-        sys.stdout.write(user + " " + str(users[user]) + " " + str(person_uri) + "\n\n")
+        person_image = open(DIRECTORY + employee_file_name(users[user]) + ".jpg", 'rb').read()
+        sys.stdout.write(user + " " + str(users[user]) + "\n\n")
         sys.stdout.flush()
-        add_face_to_person(user, person_uri)
+        add_face_to_person(user, person_image)
 
     params = {}
     body = {}
@@ -291,13 +308,14 @@ def train_group():
 
 def get_image_name():
     try:
+        person_image = open(sys.argv[2], 'rb').read()
         arg_url = sys.argv[2]
         sys.stdout.flush()
         get_face_list(PERSON_GROUP_ID)
         for i in range(0, len(face_id_list)):
             add_to_dictionary(face_id_list[i], face_id_name_list[i])
         face_list_temp = []
-        temporary_id = detect_face(arg_url)
+        temporary_id = detect_face_image(person_image)
         face_list_temp.append(temporary_id)
         identify_face(face_list_temp)
     except IndexError:
