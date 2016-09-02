@@ -89,9 +89,18 @@ The service takes GET and POST requests with parameters to various URLs.
 *POST* ``.../WebServer/rest/image/upload`` Receives an image that has been posted to the address, and saves the item as the current time in milliseconds which is then used for grooming images later, ie removing images that are more than 30s old.  
 
 ###Webcam Setup
-Open with Intellij IDEA as it was written using this IDE. Change the destination of where the images will be sent by modifying the *POST_ADDRESS* global variable to whatever you want. The only dependencies for this app is 
-[this](https://github.com/sarxos/webcam-capture "Pls download me"), which simplifies taking pictures from a webcam on a laptop. To run, click run. :smile:
+Open with Intellij IDEA as it was written using this IDE. Change the destination of where the images will be sent by modifying the *POST_ADDRESS* global variable to whatever you want. 
+Depedencies for webcam:
+* bridj-0.6.3-20130316.190111-13.jar
+* commons-logging-1.2.jar
+* dx-1.7.jar
+* httpclient-4.5.2.jar
+* httpcore-4.4.4.jar
+* httpmime-4.5.2.jar
+* mimepull-1.9.3.jar
+* slf4j-api-1.7.2.jar
+* webcam-capture-0.3.10.jar
 
 ###Deploying on Amazon Web Service
-To deploy the Tomcat webapp, Google installing Tomcat 8 on a Ubuntu installation, forward and redirect any ports necessary on the instance, SSH into the instance via a terminal and SCP the war file over to the root directory.  
-Move the file to wherever the webapps folder of the Tomcat 8 installation is on the server, then cd to bin of the Tomcat installation. Restart Tomcat and install the new webapp by ``$ sudo ./catalina run``. Hey presto :dancer:
+To deploy the Tomcat webapp, Google installing Tomcat 8, forward and redirect any ports necessary on the instance as AWS defaults to 80 and Tomcat to 8080, SSH into the instance via a terminal and SCP the war file over to the root directory.  
+Move the file to wherever the webapps folder of the Tomcat 8 installation is on the server, then cd to bin of the Tomcat installation. Restart Tomcat and install the new webapp by ``$ sudo ./catalina run``.
